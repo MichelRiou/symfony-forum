@@ -4,8 +4,13 @@ parameters:
     #parameter_name: value
 
 services:
+
     #service_name:
     #    class: AppBundle\Directory\ClassName
     #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
-
-
+    app.hello:
+        class:  AppBundle\Services\HelloService
+        arguments:
+          - "@security.token_storage"
+        tags:
+           - {name: kernel.event_subscriber}

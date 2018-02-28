@@ -20,7 +20,7 @@
         {% for post in postList %}
             <tr>
                 <td>
-                    <a href="{{ path('post_details', {'id': post.id}) }}">
+                    <a href="{{ path('post_details', {'slug': post.slug}) }}">
                         {{ post.title }}
                     </a>
                 </td>
@@ -29,6 +29,16 @@
         {% endfor %}
         </tbody>
     </table>
+    {% if is_granted("ROLE_AUTHOR") %}
+        <h2>Nouveau Post</h2>
 
+        {{ form(newPostForm ) }}
+    {% endif %}
 {% endblock %}
-
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.ckeditor.com/4.8.0/standard/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('appbundle_post_text');
+    </script>
+{% endblock %}

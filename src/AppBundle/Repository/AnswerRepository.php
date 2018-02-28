@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * AnswerRepository
  *
@@ -10,4 +12,15 @@ namespace AppBundle\Repository;
  */
 class AnswerRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getAnwsersByPost($post)
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->select('a.author,a.text,a.createdAt')
+            ->orderBy("a.createdAt", "desc")
+            ->innerJoin('a.post','p')
+            ->where('a.post=:post')
+            ->setParameter('post', $post);
+        //$qb->getDQL();
+        return $qb;
+    }
 }

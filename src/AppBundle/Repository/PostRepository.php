@@ -10,5 +10,32 @@ namespace AppBundle\Repository;
  */
 class PostRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getLastPosts($number)
+    {
+        $qb=$this->createQueryBuilder('p');
+        $qb->select('p.title','p.id','p.slug')
+            ->orderBy('p.createdAt','desc')
+            ->setMaxResults($number);
+
+        return $qb->getQuery();
+    }
+
+    public function getNumberOfPostsByYear(){
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('YEAR(p.createdAt) as yearPublished, COUNT(p.id) as numberOfPosts')
+            ->groupBy('yearPublished')->orderBy('yearPublished', 'DESC');
+        return $qb->getQuery();
+    }
+
+public function getPostsByYear($year){
+        $qb=$this->createQueryBuilder("p");
+        $qb->select("p")
+            ->where('YEAR(p.createdAt)=?1')
+            ->orderBy("p.createdAt","desc")
+        ->setParameter(1,$year);
+
+        return $qb->getQuery();
+
+}
 
 }

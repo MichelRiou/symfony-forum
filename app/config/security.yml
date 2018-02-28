@@ -4,8 +4,23 @@ security:
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        in_memory:
-            memory: ~
+        admin_provider:
+            memory:
+              users:
+                admin: {password:123, roles:  ['ROLE_ADMIN'] }
+                god: {password:777, roles:  ['ROLE_ROOT']}
+        author_provider:
+            entity:
+                class:  AppBundle:Author
+                property: email
+
+    encoders:
+      Symfony\Component\Security\Core\User\User:  plaintext
+      AppBundle\Entity\Author:
+          algorithm:  bcrypt
+
+    role_hierarchy:
+        ROLE_ROOT:  ['ROLE_ADMIN','ROLE_ALLOWED_TO_SWITCH']
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -13,8 +28,33 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        login_admin:
+            pattern: ^/admin-login$
+            anonymous:  true
+
+        admin:
+            pattern: ^/admin
+            anonymous: false
+            provider: admin_provider
+            form_login:
+                login_path: admin_login_route
+                check_path: admin_check_route
+                default_target_path: /admin
+            logout:
+                path: admin_logout
+                target: homepage
+
         main:
-            anonymous: ~
+            pattern: ^/
+            anonymous: true
+            provider: author_provider
+            form_login:
+                login_path: author_login_route
+                check_path: author_check_route
+                default_target_path: /
+            logout:
+                path: author_logout
+                target: homepage
             # activate different ways to authenticate
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate

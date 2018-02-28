@@ -5,12 +5,20 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * Post
  *
  * @ORM\Table(name="posts")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\PostRepository")
+ * @Gedmo\Loggable(logEntryClass="AppBundle\Entity\Log")
+ * @Gedmo\Uploadable(
+ *     allowOverwrite=true,
+ *     filenameGenerator="SHA1",
+ *     allowedTypes="image/jpeg,image/png",
+ *     maxSize="2000000")
  */
 class Post
 {
@@ -25,17 +33,26 @@ class Post
 
     /**
      * @var string
-     * @Gedmo\Versioned()
+     * @Assert\NotBlank(message="titre pas vide")
      * @ORM\Column(name="title", type="string", length=80)
      */
     private $title;
 
     /**
      * @var string
-     * @Gedmo\Versioned()
+     * @Assert\NotBlank(message="texte pas vide")
      * @ORM\Column(name="post_text", type="text")
+     * @Gedmo\Versioned()
      */
     private $text;
+
+    /**
+     * @var string
+     * @ORM\Column(name="slug", type="text")
+     * @Gedmo\Slug(fields={"title","createdAt"})
+     * @Gedmo\Versioned()
+     */
+    private $slug;
 
     /**
      * @var Author
@@ -55,6 +72,13 @@ class Post
      * @ORM\OneToMany(targetEntity="Answer", mappedBy="post")
      */
     private $answers;
+
+    /**
+     * @var string
+     * @ORM\Column(name="image", type ="string",length=255, nullable=true)
+     * @Gedmo\UploadableFilename()
+     */
+    private $image;
 
 
     /**
@@ -242,4 +266,43 @@ class Post
     {
         return $this->answers;
     }
+
+    /**
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     * @return Post
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     * @return Post
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+        return $this;
+    }
+
+
+
 }

@@ -1,39 +1,48 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('bower-components/bootstrap/dist/css/bootstrap.css') }}">
-        {% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body class="container-fluid">
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+</head>
+<body class="container-fluid">
 
-    <div class="row">
-        {% include("_navbar.html.twig") %}
+<div class="row">
+    {% include("_navbar.html.twig") %}
+</div>
+
+<header class="col-md-10 col-md-offset-1 well" style="margin-top: 70px;">
+    <h1>Mon forum</h1>
+</header>
+
+<div class="row">
+    <div class="col-md-7 col-md-offset-1">
+        {%  set infos=app.session.getFlashBag().get('info') %}
+        {% if infos is defined and infos | length > 0 %}
+            <div class="alert alert-info" id="alert">
+                {% for message in infos %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block body %}{% endblock %}
     </div>
 
-        <header class="col-md-10 col-md-offset-1 well" style="margin-top: 70px;">
-            <h1>Mon forum</h1>
-        </header>
+        <aside class="col-md-3">
+            {% block aside %}{% endblock %}
+        </aside>
+    </div>
 
-
-
-
-        <div class="row">
-            <div class="col-md-7 col-md-offset-1">
-                {% block body %}{% endblock %}
-            </div>
-
-            <aside class="col-md-3">
-                {% block aside %}{% endblock %}
-            </aside>
-        </div>
-
-        {% block javascripts %}
-            <script src="{{ asset('bower-components/jquery/dist/jquery.min.js') }}"></script>
-            <script src="{{ asset('bower-components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-        {% endblock %}
-    </body>
+    {% block javascripts %}
+        <script src="{{ asset('bower-components/jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('bower-components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script>
+            $("#alert").hide(2000);
+        </script>
+    {% endblock %}
+</body>
 </html>
